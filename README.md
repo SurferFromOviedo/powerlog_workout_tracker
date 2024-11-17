@@ -7,7 +7,7 @@ PowerLog is an Android app for tracking your workout progress. It is simple, eas
 
 ### **Workout Management**
 - Сreate and save workout sessions
-- Add, edit and delete custom exercises
+- Add, edit and delete exercises
 - Organize your workouts with editable templates
 
 ### **Statistics and Insights**
