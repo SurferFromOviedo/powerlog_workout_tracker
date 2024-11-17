@@ -1,14 +1,22 @@
 # PowerLog
 
-## PowerLog is an Android app for tracking your workout progress. It is simple, easy to use and functional. 
+## Track Your Fitness Journey with Ease and Precision
+PowerLog is an Android app for tracking your workout progress. It is simple, easy to use and functional. 
 
 ## Features
+
+### **Workout Management**
 - Сreate and save workout sessions
-- Create own exercises, edit and delete exercises
-- Create own workout templates, edit and delete workout templates
-- Edit and delete saved workout sessions
-- View detailed statistic of workouts or specific exercise over a period of time
-- Customize app design, change theme, color scheme
+- Add, edit and delete custom exercises
+- Organize your workouts with editable templates
+
+### **Statistics and Insights**
+- View detailed statistics for workouts or specific exercises over any time period
+- Analyze your progress with visual insights
+
+### **Personalization**
+- Customize the app's appearance with different colors
+- Switch between light and dark modes
   
 ## Technologies used 
 - Android Studio
@@ -34,32 +42,42 @@ To run this project locally, follow these steps:
       
 4. **Build and run the project**:
     - Press the Run button (the green play button) or go to Build > Build APK to generate the APK.
+
+
+## Screenshots 
+<img src="https://github.com/user-attachments/assets/0aed3338-1760-4416-94ec-67ebd75cd89c" alt="Main Screen" width="300"/>
+
+> Workout screen
+
+<img src="https://github.com/user-attachments/assets/6259f439-2295-41c5-bee5-1fb9f1943641" alt="Exercise Selection Dialog" width="300"/>
+
+> Exercise selection dialog
+
+<img src="https://github.com/user-attachments/assets/57c2268c-e101-4e3d-a817-e54bc00d05b8" alt="Template Selection Dialog" width="300"/>
+
+> Template selection dialog
   
-## Screenshots
-- Main screen with added exercises  
-<img src="https://github.com/user-attachments/assets/097ddfb6-f367-45fd-bf7c-36eb4f2e8a15" alt="Main Screen" width="350"/>
-   
-- Exercise selection dialog
-<img src="https://github.com/user-attachments/assets/46c35573-1462-46b8-9f4b-07d479c52076" alt="Exercise Selection Dialog" width="350"/>
+<img src="https://github.com/user-attachments/assets/06e7a1d2-3fac-495c-a6c7-57872bd4904a" alt="Calendar Screen" width="300"/>
 
-- Template selection dialog
-<img src="https://github.com/user-attachments/assets/aa7c5b23-aebd-46b8-8bad-706b106615db" alt="Template Selection Dialog" width="350"/>
+> Calendar screen
 
-- Calendar screen (Color scheme changed)
-<img src="https://github.com/user-attachments/assets/9c0e32da-be4f-4ffe-a837-cc0bcb973fa0" alt="Calendar Screen" width="350"/>
+<img src="https://github.com/user-attachments/assets/f12b1b21-c99a-4275-be0d-365e6993928e" alt="Workout Review" width="300"/>
 
-- Workout review
-<img src="https://github.com/user-attachments/assets/08b80592-8f25-4842-9eef-cd3c9d9d1737" alt="Workout Review" width="350"/>
+> Workout review
 
-- Stats screen first page (dark theme enabled)
-<img src="https://github.com/user-attachments/assets/9a9540e4-de15-4c01-8eb4-431c04182eff" alt="Stats Screen First Page" width="350"/>
+<img src="https://github.com/user-attachments/assets/f1d24548-ba58-4eab-87dc-50a5de5fee93" alt="Stats Screen First Page" width="300"/>
 
-- Stats screen second page (Color scheme changed, dark theme disabled)
-<img src="https://github.com/user-attachments/assets/5cc6cc91-4307-4835-89a4-81eb4b49a52b" alt="Stats Screen Second Page" width="350"/>
+> Stats screen first page
 
-- Date range selection dialog
-<img src="https://github.com/user-attachments/assets/144d4b30-b46e-44a1-a9e8-5876ba94f935" alt="Date Range Selection Dialog" width="350"/>
+<img src="https://github.com/user-attachments/assets/8ae3799b-ea43-43fe-8f1c-89c253d997b8" alt="Stats Screen Second Page" width="300"/>
 
-- Settings screen (dynamic color enabled)
-<img src="https://github.com/user-attachments/assets/9ef22bea-6121-4027-8da6-e48f70de53a2" alt="Settings Screen" width="350"/>
+> Stats screen second page
+
+<img src="https://github.com/user-attachments/assets/20a328a1-d08e-4356-873e-c0500172f197" alt="Date Range Selection Dialog" width="300"/>
+
+> Date range selection dialog
+
+<img src="https://github.com/user-attachments/assets/60ecbe08-aa3b-4873-9af4-0ae879a1c907" alt="Settings Screen" width="300"/>
+
+> Settings screen
 
