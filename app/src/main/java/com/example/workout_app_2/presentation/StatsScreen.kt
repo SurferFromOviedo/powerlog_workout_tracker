@@ -695,7 +695,7 @@ fun StatsPage1(
         val minReps = mutableIntStateOf(0)
         setEntities.maxByOrNull { setList ->
             setList.sumOf { it.reps.toIntOrNull()?:0 }
-        }?.sumOf { it.reps.toInt() } ?: 0
+        }?.sumOf { it.reps.toIntOrNull() ?: 0 } ?: 0
         setEntities.forEach { setList ->
             val numberOfReps = setList.sumOf { it.reps.toIntOrNull()?:0 }
             if (maxReps.intValue == 0) {
