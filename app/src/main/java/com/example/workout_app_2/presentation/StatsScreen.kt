@@ -965,9 +965,130 @@ fun StatsPage2(
 
     val type = remember { mutableStateOf("") }
     val baseTime = remember { mutableLongStateOf(0L) }
-
     val exerciseDataList = remember { mutableStateListOf<ExerciseData>() }
 
+    fun calculate1RM(){
+        type.value = "1RM"
+        entriesForFirstChart.clear()
+        entriesForSecondChart.clear()
+        entriesForSecondChart2.clear()
+        exerciseDataList.clear()
+
+        baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
+        setsByStartTime.keys.sorted().forEach { startTime ->
+            val day = getDaysForChart(baseTime.longValue, startTime)
+            val sets = setsByStartTime[startTime]
+            var estimated1RM = 0.0
+            var weight2 = 0.0
+            var reps2 = 0
+            for (set in sets!!) {
+                val weight = convertWeight(set.weight, set.unit, defaultUnit)
+                val reps = set.reps.toIntOrNull() ?: 0
+                if (reps > 0){
+                    if(reps > 1){
+                        val epley = weight * (1 + reps / 30f)
+                        val brzycki = weight * (36/(37f-reps))
+                        val adams = weight * (1/(1-0.02*reps))
+                        val baechle = weight * (1 + 0.033*reps)
+                        val berger = weight * (1/(1.0261* exp(-0.0262*reps)))
+                        val brown = weight * (0.98489 + 0.0328*reps)
+                        val kemmler = weight * (0.988 + 0.0104*reps + 0.00190 * reps * reps - 0.0000584 * reps * reps * reps)
+                        val landers = weight * (1/(1.013 - 0.0267123*reps))
+                        val lombardi = weight * reps.toDouble().pow(0.1)
+                        val mayhew = weight * (1/(0.522+0.419* exp(-0.055*reps)))
+                        val naclerio = weight * (1/(0.951* exp(-0.021*reps)))
+                        val oconner = weight * (1 + 0.025*reps)
+                        val wathen = weight * (1/(0.4880 + 0.538 * exp(-0.075*reps)))
+                        val sumEstimated1RM  = (epley + brzycki + adams + baechle + berger + brown + kemmler + landers + lombardi + mayhew + naclerio + oconner + wathen).toDouble()
+                        val estimated1RMOfSet = sumEstimated1RM / 13
+                        if (estimated1RMOfSet > estimated1RM) {
+                            estimated1RM = estimated1RMOfSet
+                            weight2 = weight
+                            reps2 = reps
+                        }
+                    }else{
+                        if (weight > estimated1RM) {
+                            estimated1RM = weight
+                            weight2 = weight
+                            reps2 = reps
+                        }
+                    }
+                }
+            }
+            if (estimated1RM > 0.0) {
+                entriesForFirstChart.add(Entry(day, estimated1RM.toFloat()))
+                entriesForSecondChart.add(Entry(day, weight2.toFloat()))
+                entriesForSecondChart2.add(Entry(day, reps2.toFloat()))
+            }
+        }
+    }
+
+    fun calculateMaxWeight(){
+        type.value = "Max"
+        entriesForFirstChart.clear()
+        entriesForSecondChart.clear()
+        entriesForSecondChart2.clear()
+        baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
+        setsByStartTime.keys.sorted().forEach { startTime ->
+            val day = getDaysForChart(baseTime.longValue, startTime)
+            val sets = setsByStartTime[startTime]
+            val maxWeight = sets?.maxOfOrNull { convertWeight(it.weight, it.unit, defaultUnit) } ?: 0.0
+            var maxReps = 0
+            for(set in sets!!){
+                if((convertWeight(set.weight, set.unit, defaultUnit)) == maxWeight){
+                    maxReps += set.reps.toIntOrNull() ?: 0
+                }
+            }
+            if (maxReps > 0) {
+                entriesForFirstChart.add(Entry(day, maxWeight.toFloat()))
+                entriesForSecondChart2.add(Entry(day, maxReps.toFloat()))
+            }
+
+        }
+    }
+
+    fun calculateAverage(){
+        type.value = "Avg"
+        entriesForFirstChart.clear()
+        entriesForSecondChart.clear()
+        entriesForSecondChart2.clear()
+        baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
+        setsByStartTime.keys.sorted().forEach { startTime ->
+            val day = getDaysForChart(baseTime.longValue, startTime)
+            val sets = setsByStartTime[startTime]
+            val weightSum = sets?.sumOf { (convertWeight(it.weight, it.unit, defaultUnit).times(it.reps.toDoubleOrNull() ?: 0.0))} ?: 0.0
+            val repsSum = sets?.sumOf { it.reps.toIntOrNull() ?: 0 } ?: 0
+            val avgReps = (repsSum.toDouble() / sets?.size!!)
+            if (repsSum > 0) {
+                val avgWeight = weightSum / repsSum
+                entriesForFirstChart.add(Entry(day, avgWeight.toFloat()))
+                entriesForSecondChart2.add(Entry(day, avgReps.toFloat()))
+
+            }
+        }
+    }
+
+    fun calculateSets(){
+        entriesForFirstChart.clear()
+        entriesForSecondChart.clear()
+        entriesForSecondChart2.clear()
+        baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
+        val number = selectedType.value.split(" ")[0].toInt()
+        setsByStartTime.keys.sorted().forEach { startTime ->
+            val day = getDaysForChart(baseTime.longValue, startTime)
+            val sets = setsByStartTime[startTime]
+            val set = sets?.getOrNull(number - 1)
+            if (set != null) {
+                val weight = convertWeight(set.weight, set.unit, defaultUnit)
+                val reps = set.reps.toIntOrNull() ?: 0
+                if(reps > 0){
+                    entriesForFirstChart.add(Entry(day, weight.toFloat()))
+                    entriesForSecondChart2.add(Entry(day, set.reps.toFloat()))
+                }
+
+            }
+        }
+    }
     LaunchedEffect(selectedExercise.value, startDateTime.value, endDateTime.value) {
         exercises.clear()
         exercises.addAll(ExerciseRepository.getExercisesMapped(context))
@@ -1036,124 +1157,16 @@ fun StatsPage2(
 
         when(selectedType.value){
             "1RM" -> {
-                type.value = "1RM"
-                entriesForFirstChart.clear()
-                entriesForSecondChart.clear()
-                entriesForSecondChart2.clear()
-                exerciseDataList.clear()
-
-                baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
-                setsByStartTime.keys.sorted().forEach { startTime ->
-                    val day = getDaysForChart(baseTime.longValue, startTime)
-                    val sets = setsByStartTime[startTime]
-                    var estimated1RM = 0.0
-                    var weight2 = 0.0
-                    var reps2 = 0
-                    for (set in sets!!) {
-                        val weight = convertWeight(set.weight, set.unit, defaultUnit)
-                        val reps = set.reps.toIntOrNull() ?: 0
-                        if (reps > 0){
-                            if(reps > 1){
-                                val epley = weight * (1 + reps / 30f)
-                                val brzycki = weight * (36/(37f-reps))
-                                val adams = weight * (1/(1-0.02*reps))
-                                val baechle = weight * (1 + 0.033*reps)
-                                val berger = weight * (1/(1.0261* exp(-0.0262*reps)))
-                                val brown = weight * (0.98489 + 0.0328*reps)
-                                val kemmler = weight * (0.988 + 0.0104*reps + 0.00190 * reps * reps - 0.0000584 * reps * reps * reps)
-                                val landers = weight * (1/(1.013 - 0.0267123*reps))
-                                val lombardi = weight * reps.toDouble().pow(0.1)
-                                val mayhew = weight * (1/(0.522+0.419* exp(-0.055*reps)))
-                                val naclerio = weight * (1/(0.951* exp(-0.021*reps)))
-                                val oconner = weight * (1 + 0.025*reps)
-                                val wathen = weight * (1/(0.4880 + 0.538 * exp(-0.075*reps)))
-                                val sumEstimated1RM  = (epley + brzycki + adams + baechle + berger + brown + kemmler + landers + lombardi + mayhew + naclerio + oconner + wathen).toDouble()
-                                val estimated1RMOfSet = sumEstimated1RM / 13
-                                if (estimated1RMOfSet > estimated1RM) {
-                                    estimated1RM = estimated1RMOfSet
-                                    weight2 = weight
-                                    reps2 = reps
-                                }
-                            }else{
-                                if (weight > estimated1RM) {
-                                    estimated1RM = weight
-                                    weight2 = weight
-                                    reps2 = reps
-                                }
-                            }
-                        }
-                    }
-                    if (estimated1RM > 0.0) {
-                        entriesForFirstChart.add(Entry(day, estimated1RM.toFloat()))
-                        entriesForSecondChart.add(Entry(day, weight2.toFloat()))
-                        entriesForSecondChart2.add(Entry(day, reps2.toFloat()))
-                    }
-
-                }
+                calculate1RM()
             }
             "Max weight" -> {
-                type.value = "Max"
-                entriesForFirstChart.clear()
-                entriesForSecondChart.clear()
-                entriesForSecondChart2.clear()
-                baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
-                setsByStartTime.keys.sorted().forEach { startTime ->
-                    val day = getDaysForChart(baseTime.longValue, startTime)
-                    val sets = setsByStartTime[startTime]
-                    val maxWeight = sets?.maxOfOrNull { convertWeight(it.weight, it.unit, defaultUnit) } ?: 0.0
-                    var maxReps = 0
-                    for(set in sets!!){
-                        if((convertWeight(set.weight, set.unit, defaultUnit)) == maxWeight){
-                            maxReps += set.reps.toIntOrNull() ?: 0
-                        }
-                    }
-                    if (maxReps > 0) {
-                        entriesForFirstChart.add(Entry(day, maxWeight.toFloat()))
-                        entriesForSecondChart2.add(Entry(day, maxReps.toFloat()))
-                    }
-
-                }
+                calculateMaxWeight()
             }
             "Average" -> {
-                type.value = "Avg"
-                entriesForFirstChart.clear()
-                entriesForSecondChart.clear()
-                entriesForSecondChart2.clear()
-                baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
-                setsByStartTime.keys.sorted().forEach { startTime ->
-                    val day = getDaysForChart(baseTime.longValue, startTime)
-                    val sets = setsByStartTime[startTime]
-                    val weightSum = sets?.sumOf { (convertWeight(it.weight, it.unit, defaultUnit).times(it.reps.toDoubleOrNull() ?: 0.0))} ?: 0.0
-                    val repsSum = sets?.sumOf { it.reps.toIntOrNull() ?: 0 } ?: 0
-                    val avgReps = (repsSum.toDouble() / sets?.size!!)
-                    if (repsSum > 0) {
-                        val avgWeight = weightSum / repsSum
-                        entriesForFirstChart.add(Entry(day, avgWeight.toFloat()))
-                        entriesForSecondChart2.add(Entry(day, avgReps.toFloat()))
-
-                    }
-                }
+                calculateAverage()
             }
             else -> {
-                entriesForFirstChart.clear()
-                entriesForSecondChart.clear()
-                entriesForSecondChart2.clear()
-                baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
-                val number = selectedType.value.split(" ")[0].toInt()
-                setsByStartTime.keys.sorted().forEach { startTime ->
-                    val day = getDaysForChart(baseTime.longValue, startTime)
-                    val sets = setsByStartTime[startTime]
-                    val set = sets?.getOrNull(number - 1)
-                    if (set != null) {
-                        val weight = convertWeight(set.weight, set.unit, defaultUnit)
-                        val reps = set.reps.toIntOrNull() ?: 0
-                        if(reps > 0){
-                            entriesForFirstChart.add(Entry(day, weight.toFloat()))
-                            entriesForSecondChart2.add(Entry(day, set.reps.toFloat()))
-                        }
-
-                    }
-                }
+                calculateSets()
             }
         }
         exerciseDataList.clear()
@@ -1199,121 +1212,16 @@ fun StatsPage2(
     LaunchedEffect(selectedType.value) {
         when(selectedType.value){
             "1RM" -> {
-                type.value = "1RM"
-                entriesForFirstChart.clear()
-                entriesForSecondChart.clear()
-                entriesForSecondChart2.clear()
-                baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
-                setsByStartTime.keys.sorted().forEach { startTime ->
-                    val day = getDaysForChart(baseTime.longValue, startTime)
-                    val sets = setsByStartTime[startTime]
-                    var estimated1RM = 0.0
-                    var weight2 = 0.0
-                    var reps2 = 0
-                    for (set in sets!!) {
-                        val weight = convertWeight(set.weight, set.unit, defaultUnit)
-                        val reps = set.reps.toIntOrNull() ?: 0
-                        if (reps > 0){
-                            if(reps > 1){
-                                val epley = weight * (1 + reps / 30f)
-                                val brzycki = weight * (36/(37f-reps))
-                                val adams = weight * (1/(1-0.02*reps))
-                                val baechle = weight * (1 + 0.033*reps)
-                                val berger = weight * (1/(1.0261* exp(-0.0262*reps)))
-                                val brown = weight * (0.98489 + 0.0328*reps)
-                                val kemmler = weight * (0.988 + 0.0104*reps + 0.00190 * reps * reps - 0.0000584 * reps * reps * reps)
-                                val landers = weight * (1/(1.013 - 0.0267123*reps))
-                                val lombardi = weight * reps.toDouble().pow(0.1)
-                                val mayhew = weight * (1/(0.522+0.419* exp(-0.055*reps)))
-                                val naclerio = weight * (1/(0.951* exp(-0.021*reps)))
-                                val oconner = weight * (1 + 0.025*reps)
-                                val wathen = weight * (1/(0.4880 + 0.538 * exp(-0.075*reps)))
-                                val sumEstimated1RM  = (epley + brzycki + adams + baechle + berger + brown + kemmler + landers + lombardi + mayhew + naclerio + oconner + wathen).toDouble()
-                                val estimated1RMOfSet = sumEstimated1RM / 13
-                                if (estimated1RMOfSet > estimated1RM) {
-                                    estimated1RM = estimated1RMOfSet
-                                    weight2 = weight
-                                    reps2 = reps
-                                }
-                            }else{
-                                if (weight > estimated1RM) {
-                                    estimated1RM = weight
-                                    weight2 = weight
-                                    reps2 = reps
-                                }
-                            }
-                        }
-                    }
-                    if (estimated1RM > 0.0) {
-                        entriesForFirstChart.add(Entry(day, estimated1RM.toFloat()))
-                        entriesForSecondChart.add(Entry(day, weight2.toFloat()))
-                        entriesForSecondChart2.add(Entry(day, reps2.toFloat()))
-                    }
-                }
+                calculate1RM()
             }
             "Max weight" -> {
-                type.value = "Max"
-                entriesForFirstChart.clear()
-                entriesForSecondChart.clear()
-                entriesForSecondChart2.clear()
-                baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
-                setsByStartTime.keys.sorted().forEach { startTime ->
-                    val day = getDaysForChart(baseTime.longValue, startTime)
-                    val sets = setsByStartTime[startTime]
-                    val maxWeight = sets?.maxOfOrNull { convertWeight(it.weight, it.unit, defaultUnit) } ?: 0.0
-                    var maxReps = 0
-                    for(set in sets!!){
-                        if((convertWeight(set.weight, set.unit, defaultUnit)) == maxWeight){
-                            maxReps += set.reps.toIntOrNull() ?: 0
-                        }
-                    }
-                    if (maxReps > 0) {
-                        entriesForFirstChart.add(Entry(day, maxWeight.toFloat()))
-                        entriesForSecondChart2.add(Entry(day, maxReps.toFloat()))
-                    }
-
-                }
+                calculateMaxWeight()
             }
             "Average" -> {
-                type.value = "Avg"
-                entriesForFirstChart.clear()
-                entriesForSecondChart.clear()
-                entriesForSecondChart2.clear()
-                baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
-                setsByStartTime.keys.sorted().forEach { startTime ->
-                    val day = getDaysForChart(baseTime.longValue, startTime)
-                    val sets = setsByStartTime[startTime]
-                    val weightSum = sets?.sumOf { (convertWeight(it.weight, it.unit, defaultUnit).times(it.reps.toDoubleOrNull() ?: 0.0))} ?: 0.0
-                    val repsSum = sets?.sumOf { it.reps.toIntOrNull() ?: 0 } ?: 0
-                    val avgReps = (repsSum.toDouble() / sets?.size!!)
-                    if (repsSum > 0) {
-                        val avgWeight = weightSum / repsSum
-                        entriesForFirstChart.add(Entry(day, avgWeight.toFloat()))
-                        entriesForSecondChart2.add(Entry(day, avgReps.toFloat()))
-
-                    }
-                }
+                calculateAverage()
             }
             else -> {
-                entriesForFirstChart.clear()
-                entriesForSecondChart.clear()
-                entriesForSecondChart2.clear()
-                baseTime.longValue = setsByStartTime.keys.minOrNull() ?: 0L
-                val number = selectedType.value.split(" ")[0].toInt()
-                setsByStartTime.keys.sorted().forEach { startTime ->
-                    val day = getDaysForChart(baseTime.longValue, startTime)
-                    val sets = setsByStartTime[startTime]
-                    val set = sets?.getOrNull(number - 1)
-                    if (set != null) {
-                        val weight = convertWeight(set.weight, set.unit, defaultUnit)
-                        val reps = set.reps.toIntOrNull() ?: 0
-                        if(reps > 0){
-                            entriesForFirstChart.add(Entry(day, weight.toFloat()))
-                            entriesForSecondChart2.add(Entry(day, set.reps.toFloat()))
-                        }
-
-                    }
-                }
+                calculateSets()
             }
         }
         exerciseDataList.clear()
