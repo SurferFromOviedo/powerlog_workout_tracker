@@ -36,7 +36,9 @@ fun TemplateSelectorItem(
         .height(105.dp)
         .fillMaxWidth()
         .padding(vertical = 6.dp),
-        shape = RoundedCornerShape(16.dp))
+        shape = RoundedCornerShape(16.dp),
+        shadowElevation = 4.dp
+    )
     {
         Row(
             modifier = Modifier

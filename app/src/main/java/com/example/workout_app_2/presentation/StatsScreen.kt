@@ -390,9 +390,9 @@ fun StatsScreen(
     }
 
     LaunchedEffect(Unit){
-            if(startDateTime.value == getStartOfTheDay(1, 1, 1970) && endDateTime.value == todayTimeStamp){
-                selectedTimePeriod = "All time"
-            }
+        if(startDateTime.value == getStartOfTheDay(1, 1, 1970) && endDateTime.value == todayTimeStamp){
+            selectedTimePeriod = "All time"
+        }
     }
 
     Column(
@@ -422,13 +422,23 @@ fun StatsScreen(
                     }
                 }
         )
-        Box{
+
+        Box(
+            modifier = Modifier
+                .weight(1f)
+        ){
             HorizontalPager(state = pagerState) { page ->
                 when(page){
                     0 -> StatsPage1(preferencesViewModel, endDateTime, startDateTime)
                     1 -> StatsPage2(preferencesViewModel, endDateTime, startDateTime)
                 }
             }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp)
+        ){
             HorizontalPagerIndicator(
                 modifier = Modifier
                     .align(Alignment.BottomCenter),
