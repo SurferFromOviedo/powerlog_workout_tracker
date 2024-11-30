@@ -1410,6 +1410,6 @@ fun StatsScreenPreview(){
     val startDateTime = remember{ mutableStateOf<Long?>(null)}
 
     Workout_App_2Theme {
-        StatsPage2(preferencesViewModel = PreferencesViewModel(PreferencesDataStore(LocalContext.current)), endDateTime = endDateTime, startDateTime = startDateTime)
+       // StatsPage2(preferencesViewModel = PreferencesViewModel(PreferencesDataStore(LocalContext.current)), endDateTime = endDateTime, startDateTime = startDateTime)
     }
 }

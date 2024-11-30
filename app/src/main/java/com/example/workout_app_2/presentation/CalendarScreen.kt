@@ -643,6 +643,6 @@ fun CalendarScreen(
 @Composable
 fun CalendarScreenPreview(){
     Workout_App_2Theme {
-        CalendarScreen(preferencesViewModel = PreferencesViewModel(PreferencesDataStore(LocalContext.current)))
+        //CalendarScreen(preferencesViewModel = PreferencesViewModel(PreferencesDataStore(LocalContext.current)))
     }
 }

@@ -471,6 +471,6 @@ fun WorkoutScreen(
 @Composable
 fun PreviewWorkoutScreen() {
     Workout_App_2Theme {
-        WorkoutScreen(PreferencesViewModel(PreferencesDataStore(LocalContext.current)), onShowDialogChange = {}, showDialog = false,onSelectedExerciseChange = {})
+       // WorkoutScreen(PreferencesViewModel(PreferencesDataStore(LocalContext.current)), onShowDialogChange = {}, showDialog = false,onSelectedExerciseChange = {})
     }
 }

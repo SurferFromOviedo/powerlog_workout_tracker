@@ -2,12 +2,15 @@ package com.example.workout_app_2.presentation
 
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -44,6 +47,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -60,17 +64,22 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.workout_app_2.data.DatabaseProvider
 import com.example.workout_app_2.data.ExerciseRepository
+import com.example.workout_app_2.data.FirebaseRepository
 import com.example.workout_app_2.data.PreferencesDataStore
 import com.example.workout_app_2.data.PreferencesDataStoreManager
 import com.example.workout_app_2.data.PreferencesViewModel
 import com.example.workout_app_2.data.PreferencesViewModelFactory
 import com.example.workout_app_2.ui.theme.Workout_App_2Theme
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -83,11 +92,24 @@ class MainActivity : ComponentActivity() {
         preferencesDataStore = PreferencesDataStoreManager.getInstance(this)
         super.onCreate(savedInstanceState)
 
+        val firebaseRepository = FirebaseRepository()
+        val database = DatabaseProvider.getDatabase(this)
+
+        val preferencesViewModel = ViewModelProvider(
+            this,
+            PreferencesViewModelFactory(
+                preferencesDataStore,
+                firebaseRepository,
+                database.exerciseDao(),
+                database.workoutDao(),
+                database.templateDao(),
+                database.templateSetDao(),
+                database.setDao()
+            )
+        )[PreferencesViewModel::class.java]
+
         enableEdgeToEdge()
         setContent {
-            val preferencesViewModel: PreferencesViewModel = viewModel(
-                factory = PreferencesViewModelFactory(preferencesDataStore)
-            )
             MainActivityContent(preferencesViewModel)
         }
     }
@@ -292,7 +314,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun PreviewMainActivity() {
         Workout_App_2Theme {
-            MainActivityContent(preferencesViewModel = PreferencesViewModel(preferencesDataStore))
+            //MainActivityContent(preferencesViewModel = PreferencesViewModel(preferencesDataStore))
         }
     }
 }

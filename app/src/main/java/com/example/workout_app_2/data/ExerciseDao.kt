@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ExerciseDao {
@@ -32,5 +33,13 @@ interface ExerciseDao {
 
     @Query("UPDATE exercises SET usage  = 0")
     suspend fun clearUsageData()
+
+    @Query("SELECT * FROM exercises")
+    fun getAll(): Flow<List<ExerciseEntity>>
+
+    @Query("DELETE FROM exercises")
+    suspend fun deleteAll()
+
+
 
 }

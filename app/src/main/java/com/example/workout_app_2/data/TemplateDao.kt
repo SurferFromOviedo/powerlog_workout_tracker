@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TemplateDao {
@@ -42,4 +43,23 @@ interface TemplateDao {
     @Transaction
     @Query("SELECT COUNT(*) FROM template_exercises WHERE exerciseId = (SELECT id FROM exercises WHERE name = :exerciseName)")
     suspend fun getTemplateCountByExerciseName(exerciseName: String): Int
+
+    @Query("SELECT * FROM templates")
+    fun getAllTemplatesFlow(): Flow<List<TemplateEntity>>
+
+    @Query("SELECT * FROM template_exercises")
+    fun getAllTemplateExercises(): Flow<List<TemplateExerciseEntity>>
+
+    @Query("DELETE FROM templates")
+    suspend fun deleteAllTemplates()
+
+    @Query("DELETE FROM template_exercises")
+    suspend fun deleteAllTemplateExercises()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllTemplates(templates: List<TemplateEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllTemplateExercises(templateExercises: List<TemplateExerciseEntity>)
+
 }

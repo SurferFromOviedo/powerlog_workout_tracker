@@ -216,6 +216,6 @@ fun SetItem(
 fun PreviewSetItem(){
     val fakeSet = ExerciseSet("100", "KG", "10")
     Workout_App_2Theme {
-        SetItem(fakeSet,PreferencesViewModel(PreferencesDataStore(LocalContext.current)), onSetChange = {})
+       // SetItem(fakeSet,PreferencesViewModel(PreferencesDataStore(LocalContext.current)), onSetChange = {})
     }
 }

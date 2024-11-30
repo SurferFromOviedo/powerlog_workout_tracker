@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WorkoutDao {
@@ -57,5 +58,23 @@ interface WorkoutDao {
 
     @Query("SELECT * FROM workouts WHERE id = :workoutId")
     suspend fun getWorkoutById(workoutId: Int): WorkoutEntity?
+
+    @Query("SELECT * FROM workouts")
+    fun getAllWorkouts2(): Flow<List<WorkoutEntity>>
+
+    @Query("SELECT * FROM workout_exercises")
+    fun getAllWorkoutsExercises(): Flow<List<WorkoutExerciseEntity>>
+
+    @Query("DELETE FROM workouts")
+    suspend fun deleteAllWorkouts()
+
+    @Query("DELETE FROM workout_exercises")
+    suspend fun deleteAllWorkoutsExercises()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllWorkoutExercises(workoutExercises: List<WorkoutExerciseEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllWorkouts(workouts: List<WorkoutEntity>)
 
 }

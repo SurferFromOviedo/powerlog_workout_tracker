@@ -157,9 +157,9 @@ fun PieChartViewPreview(){
         PieEntry(35f, "Chest")
     )
     Workout_App_2Theme {
-        PieChartView(entries = pieEntries, isWeight = true, preferencesViewModel = PreferencesViewModel(
-            PreferencesDataStore(LocalContext.current)
-        ))
+      //  PieChartView(entries = pieEntries, isWeight = true, preferencesViewModel = PreferencesViewModel(
+      //      PreferencesDataStore(LocalContext.current)
+     //   ))
     }
 }
 

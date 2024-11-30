@@ -726,6 +726,6 @@ fun DateRangePicker(
 @Composable
 fun DateRangePickerPreview(){
     Workout_App_2Theme {
-        DateRangePicker(onDismiss = {}, preferencesViewModel = PreferencesViewModel(PreferencesDataStore(LocalContext.current)), onDateRangeSelected = { })
+        //DateRangePicker(onDismiss = {}, preferencesViewModel = PreferencesViewModel(PreferencesDataStore(LocalContext.current)), onDateRangeSelected = { })
     }
 }

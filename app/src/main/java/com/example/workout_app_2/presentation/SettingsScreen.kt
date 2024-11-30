@@ -2,7 +2,9 @@ package com.example.workout_app_2.presentation
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,6 +56,8 @@ import com.example.workout_app_2.data.PreferencesViewModel
 import com.example.workout_app_2.data.TemplateEntity
 import com.example.workout_app_2.data.WorkoutTemplate
 import com.example.workout_app_2.ui.theme.Workout_App_2Theme
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -90,6 +95,20 @@ fun SettingsScreen(
     val context = LocalContext.current
     val database = remember { DatabaseProvider.getDatabase(context) }
     val scope = rememberCoroutineScope()
+
+    val auth = Firebase.auth
+    val userEmail = remember { mutableStateOf(auth.currentUser?.email)}
+    val authLabel = remember { mutableStateOf("Sign in") }
+
+    auth.addAuthStateListener {
+        userEmail.value = it.currentUser?.email
+        if(it.currentUser != null){
+            authLabel.value = "Sign out"
+        }else{
+            authLabel.value = "Sign in"
+        }
+    }
+
 
     suspend fun mapTemplates(templateEntities: List<TemplateEntity>): List<WorkoutTemplate> {
         val mappedTemplates =
@@ -134,6 +153,51 @@ fun SettingsScreen(
                 workoutTemplates = mapTemplates(templateEntities)
             }
         }
+    }
+
+    val wasJustSignedIn = remember { mutableStateOf(false) }
+    val authActivityLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val wasJustSignedInFlag = result.data?.getBooleanExtra("wasJustSignedIn", false) ?: false
+            if (wasJustSignedInFlag) {
+                wasJustSignedIn.value = true
+            }
+        }
+    }
+
+    val showSyncDialog = remember { mutableStateOf(false) }
+
+    auth.addAuthStateListener {
+        val currentUser = it.currentUser
+        userEmail.value = currentUser?.email
+        if (currentUser != null) {
+            if (wasJustSignedIn.value) {
+                preferencesViewModel.syncAfterLogin { decisionRequired ->
+                    if (decisionRequired) {
+                        showSyncDialog.value = true
+                    }
+                }
+                wasJustSignedIn.value = false
+            }
+        }
+    }
+    if (showSyncDialog.value) {
+        SyncDialog(
+            onDismiss = {
+                preferencesViewModel.overwriteFirestoreWithRoomData()
+                showSyncDialog.value = false
+            },
+            onImport = {
+                preferencesViewModel.importDataFromFirestore()
+                showSyncDialog.value = false
+            },
+            onOverwrite = {
+                preferencesViewModel.overwriteFirestoreWithRoomData()
+                showSyncDialog.value = false
+            }
+
+        )
     }
 
     LaunchedEffect(database) {
@@ -465,6 +529,50 @@ fun SettingsScreen(
                 )
             )
         }
+        HorizontalDivider()
+        Spacer(modifier = Modifier.padding(4.dp))
+        Text(text = "Account", fontWeight = FontWeight.Bold)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .weight(0.6f, fill = false),
+                text = if(userEmail.value != null) "${userEmail.value}" else "Not signed in",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Button(
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .weight(0.4f, fill = false),
+                onClick = {
+                    if(userEmail.value == null){
+                        val intent = Intent(context, AuthActivity::class.java)
+                        intent.putExtra("unit", unit)
+                        intent.putExtra("theme", theme)
+                        intent.putExtra("dynamicColor", dynamicColor)
+                        intent.putExtra("primaryColor", primaryColor)
+                        intent.putExtra("screenOn", screenOn)
+                        authActivityLauncher.launch(intent)
+                    }else{
+                        auth.signOut()
+                        userEmail.value = null
+                    }
+
+                },
+                shape = RoundedCornerShape(40)
+            ){
+                Text(
+                    text = authLabel.value
+                )
+            }
+        }
     }
 
     SnackbarHost(hostState = snackbarHostState)
@@ -674,6 +782,6 @@ fun SettingsScreen(
 @Composable
 fun PreviewSettingsScreen() {
     Workout_App_2Theme {
-        SettingsScreen(workoutInProcess = false, PreferencesViewModel(PreferencesDataStore(LocalContext.current)))
+        //SettingsScreen(workoutInProcess = false, PreferencesViewModel(PreferencesDataStore(LocalContext.current)))
     }
 }

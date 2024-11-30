@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "753746475825",
+    "project_id": "powerlog-ca9a2",
+    "storage_bucket": "powerlog-ca9a2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753746475825:android:b1a3a9e6596c2903774e10",
+        "android_client_info": {
+          "package_name": "com.example.workout_app_2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNV5BpVEAU8sUX1gjMnUhMO3N_5pgV46c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

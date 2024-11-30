@@ -102,6 +102,6 @@ fun SelectedExerciseItem(
 fun PreviewSelectedExerciseItem() {
     val fakeExercise = Exercise("Deadlift", "Privet", "Kad dela",null)
     Workout_App_2Theme {
-        SelectedExerciseItem(fakeExercise,PreferencesViewModel(PreferencesDataStore(LocalContext.current)), onDelete = {}, onExerciseChange = {})
+       // SelectedExerciseItem(fakeExercise,PreferencesViewModel(PreferencesDataStore(LocalContext.current)), onDelete = {}, onExerciseChange = {})
     }
 }

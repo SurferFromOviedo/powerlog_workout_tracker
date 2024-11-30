@@ -12,20 +12,26 @@ data class ExerciseEntity(
     val image: String? = null,
     val usage: Int = 0,
     @PrimaryKey(autoGenerate = true) val id: Int = 0
-)
+){
+    constructor() : this("", "", "", null, 0, 0)
+}
 
 @Entity(tableName = "workouts")
 data class WorkoutEntity(
     val startTime: Long,
     val duration: Long,
     @PrimaryKey(autoGenerate = true) val id: Int = 0
-)
+){
+    constructor() : this(0, 0, 0)
+}
 
 @Entity(tableName = "templates")
 data class TemplateEntity(
     var name: String,
     @PrimaryKey(autoGenerate = true) val id: Int = 0
-)
+){
+    constructor() : this("", 0)
+}
 
 @Entity(
     tableName = "workout_exercises",
@@ -39,7 +45,9 @@ data class WorkoutExerciseEntity(
     val exerciseId: Int,
     val orderIndex: Int,
     @PrimaryKey(autoGenerate = true) val id: Int = 0
-)
+){
+    constructor() : this(0, 0, 0, 0)
+}
 
 @Entity(
     tableName = "template_exercises",
@@ -53,7 +61,9 @@ data class TemplateExerciseEntity(
     val exerciseId: Int,
     val orderIndex: Int,
     @PrimaryKey(autoGenerate = true) val id: Int = 0
-)
+){
+    constructor() : this(0, 0, 0, 0)
+}
 
 @Entity(tableName = "template_sets")
 data class TemplateSetEntity(
@@ -63,7 +73,9 @@ data class TemplateSetEntity(
     val exerciseId: Int,
     val templateId: Int,
     @PrimaryKey(autoGenerate = true) val id: Int = 0
-)
+){
+    constructor() : this("", "", "", 0, 0, 0)
+}
 
 
 @Entity(tableName = "sets")
@@ -74,4 +86,6 @@ data class SetEntity(
     val exerciseId: Int,
     val workoutId: Int,
     @PrimaryKey(autoGenerate = true) val id: Int = 0
-)
+){
+    constructor() : this("", "", "", 0, 0, 0)
+}
