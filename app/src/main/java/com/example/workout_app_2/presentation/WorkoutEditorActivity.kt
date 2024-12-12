@@ -149,11 +149,13 @@ class WorkoutEditorActivity : ComponentActivity() {
                     sets = sets
                 )
             }
-            viewModel.selectedExercises.addAll(
-                exercisesForWorkout.map { exercise ->
-                    exercise.copy(id = UUID.randomUUID().toString())
-                }
-            )
+            if(viewModel.selectedExercises.isEmpty()){
+                viewModel.selectedExercises.addAll(
+                    exercisesForWorkout.map { exercise ->
+                        exercise.copy(id = UUID.randomUUID().toString())
+                    }
+                )
+            }
         }
 
         var showAlert by remember { mutableStateOf(false) }
