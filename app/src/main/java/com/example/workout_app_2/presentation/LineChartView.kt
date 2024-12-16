@@ -108,13 +108,10 @@ fun LineChartView(
     AndroidView(
         factory = { context ->
             LineChart(context).apply {
-
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
-
-
                 description.isEnabled = false
                 setTouchEnabled(true)
                 setDragEnabled(true)
@@ -174,7 +171,6 @@ fun LineChartView(
                     setDrawFilled(false)
                     valueFormatter = customFormatter
                 }
-
                 data = LineData(lineDataSet, lineDataSet2)
                 invalidate()
             }
@@ -224,6 +220,7 @@ fun LineChartView(
                 }
 
                 chart.data = LineData(lineDataSet, lineDataSet2)
+                chart.setMaxVisibleValueCount(if (secondEntries.isNotEmpty()) 30 else 15)
                 chart.notifyDataSetChanged()
                 chart.invalidate()
             }else{
