@@ -194,7 +194,7 @@ fun LineChartView(
                 }
 
             }
-            if(firstEntries.isNotEmpty() || secondEntries.isNotEmpty()){
+            if(firstEntries.isNotEmpty() && secondEntries.isNotEmpty()){
                 val lineDataSet = LineDataSet(adjustedFirstEntries, yAxisLabel).apply {
                     color = Color.BLUE
                     lineWidth = 2f
@@ -220,7 +220,36 @@ fun LineChartView(
                 }
 
                 chart.data = LineData(lineDataSet, lineDataSet2)
-                chart.setMaxVisibleValueCount(if (secondEntries.isNotEmpty()) 30 else 15)
+                chart.setMaxVisibleValueCount(30)
+                chart.notifyDataSetChanged()
+                chart.invalidate()
+            }else if(firstEntries.isNotEmpty() || secondEntries.isNotEmpty()){
+                val lineDataSet = LineDataSet(adjustedFirstEntries, yAxisLabel).apply {
+                    color = Color.BLUE
+                    lineWidth = 2f
+                    setDrawCircles(true)
+                    setCircleColor(Color.BLUE)
+                    setDrawValues(true)
+                    valueTextColor = colorText
+                    valueTextSize = 10f
+                    setDrawFilled(false)
+                    valueFormatter = customFormatter
+                }
+
+                val lineDataSet2 = LineDataSet(adjustedSecondEntries, yAxisLabel2).apply {
+                    color = Color.RED
+                    lineWidth = 2f
+                    setDrawCircles(true)
+                    setCircleColor(Color.RED)
+                    setDrawValues(true)
+                    valueTextColor = colorText
+                    valueTextSize = 10f
+                    setDrawFilled(false)
+                    valueFormatter = customFormatter
+                }
+
+                chart.data = LineData(lineDataSet, lineDataSet2)
+                chart.setMaxVisibleValueCount(15)
                 chart.notifyDataSetChanged()
                 chart.invalidate()
             }else{
